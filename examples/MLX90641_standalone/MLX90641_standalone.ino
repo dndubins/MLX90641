@@ -1,4 +1,6 @@
 // MLX90641_standalone.ino
+// Description: A standalone sketch for the MLX90641 16x12 IR Sensor.
+// Distributed with MLX90641.h
 // Author: D. Dubins
 // Co-authors: ChatGPT 3.0, Perplexity.AI
 // Date: 02-Dec-25
