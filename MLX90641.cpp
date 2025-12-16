@@ -1,4 +1,4 @@
-// MLX90641.cpp file for the MLX90641.h library.
+// MLX90641.cpp file for the MLX90641.h library, version 1.0.1
 // Author: D. Dubins
 // Co-authors: ChatGPT 3.0, Perplexity.AI
 // Date: 02-Dec-25
@@ -910,3 +910,4 @@ bool MLX90641::setRefreshRate(uint8_t rate) {
 #endif
   return (Wire.endTransmission() == 0);
 }
+
