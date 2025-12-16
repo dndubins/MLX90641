@@ -1,4 +1,4 @@
-// MLX90641_basicRead.ino file for the MLX90641.h library, version 1.0.1
+// MLX90641_basicRead.ino file for the MLX90641.h library, version 1.0.2
 // Author: D. Dubins
 // Lots of help from: ChatGPT 3.0, Perplexity.AI
 // Date: 02-Dec-25
