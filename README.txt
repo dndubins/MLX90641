@@ -49,7 +49,8 @@ The functions available in the library include:
 To use the library, copy the download to the Library directory.
  
 Technical notes:
-- MLX90641 only currently works on the ESP32.
+- This MLX90641.h library was designed only for the ESP32. Feel free to adapt it to other MCUs!
+
 
 
 
