@@ -1,4 +1,4 @@
-// MLX90641_Heatmap.pde
+// MLX90641_heatmap.pde
 // Author: D. Dubins with assitance from Perplexity.AI
 // Date: 11-Dec-25
 // Simple 16x12 heat map for MLX90641 serial output
