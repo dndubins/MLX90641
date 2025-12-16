@@ -1,4 +1,6 @@
 // MLX90641_processing.ino file for the MLX90641.h library, version 1.0.1
+// Description: Generates a colour heat map for the MLX90641, using Processing
+// (available at https://processing.org/)
 // Author: D. Dubins
 // Lots of help from: ChatGPT 3.0, Perplexity.AI
 // Date: 02-Dec-25
