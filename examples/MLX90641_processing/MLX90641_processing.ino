@@ -1,5 +1,8 @@
 // MLX90641_processing.ino file for the MLX90641.h library, version 1.0.1
-// Description: Generates a colour heat map for the MLX90641, using Processing
+// Description: Outputs the ambient temperature + pixels all in one line
+// to the Serial Monitor. Works in conjunction with the following sketch:
+// https://github.com/dndubins/MLX90641/blob/main/extras/MLX90641_heatmap.pde
+// which generates a colour heat map for the MLX90641, using Processing
 // (available at https://processing.org/)
 // Author: D. Dubins
 // Lots of help from: ChatGPT 3.0, Perplexity.AI
