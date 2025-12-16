@@ -132,8 +132,8 @@ void loop() {
         float lim3 = 27.0;  // high limit for heat map
 #ifdef HEATMAP
         if (myIRcam.T_o[r * 16 + c] > lim3) Serial.print("H");  // hot
-        if (myIRcam.T_o[r * 16 + c] > lim2 && T_o[r * 16 + c] <= lim3) Serial.print("*");
-        if (myIRcam.T_o[r * 16 + c] > lim1 && T_o[r * 16 + c] <= lim2) Serial.print(".");
+        if (myIRcam.T_o[r * 16 + c] > lim2 && myIRcam.T_o[r * 16 + c] <= lim3) Serial.print("*");
+        if (myIRcam.T_o[r * 16 + c] > lim1 && myIRcam.T_o[r * 16 + c] <= lim2) Serial.print(".");
         if (myIRcam.T_o[r * 16 + c] <= lim1) Serial.print("C");  // cold
 #else
         Serial.print(myIRcam.T_o[r * 16 + c], 1);  // putting the data in a 16x12 grid
