@@ -8,6 +8,8 @@ I wrote this sketch because the drivers written by Melexis available at https://
 * The example sketch "MLX90641_processing.ino" formats the output for a processing sketch, to draw a heat map.
 * The example sketch "MLX90641_Heatmap.pde" is a processing sketch to make the heat map, with a simple control panel.
 
+Melexis. Datasheet: MLX90641 16x12 IR Array Datasheet, Revision 4 - September 14, 2023. 3901090641
+
 * For those of you who don't like libraries, I included a library-free version in a self-contained sketch, "MLX90641.ino".
 
 The functions available in the library include:
@@ -49,3 +51,4 @@ To use the library, copy the download to the Library directory.<p>
  
 Technical notes:
 - MLX90641 only currently works on the ESP32.
+
