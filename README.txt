@@ -7,6 +7,7 @@ I wrote this sketch because the drivers written by Melexis available at https://
 * The example sketch "MLX90641_basicRead.ino" illustrates a simple reading with basic temperature output to the Serial Monitor.
 * The example sketch "MLX90641_processing.ino" formats the output for a processing sketch, to draw a heat map.
 * The example sketch "MLX90641_Heatmap.pde" is a processing sketch to make the heat map, with a simple control panel.
+* The file "FAB-MLX90641-001-A.1.zip" is a Gerber and Drill file if you would like to print a PCB for the sensor.
 
 Datasheet: Melexis. "MLX90641 16x12 IR Array Datasheet", Revision 4 - September 14, 2023. 3901090641
 
@@ -49,4 +50,5 @@ To use the library, copy the download to the Library directory.
  
 Technical notes:
 - MLX90641 only currently works on the ESP32.
+
 
