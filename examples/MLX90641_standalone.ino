@@ -1,4 +1,4 @@
-// MLX90641.ino
+// MLX90641_standalone.ino
 // Author: D. Dubins
 // Co-authors: ChatGPT 3.0, Perplexity.AI
 // Date: 02-Dec-25
