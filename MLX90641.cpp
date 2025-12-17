@@ -1,11 +1,8 @@
-// MLX90641.cpp file for the MLX90641.h library, version 1.0.1
+// MLX90641.cpp file for the MLX90641.h library, version 1.0.3
 // Author: D. Dubins
 // Co-authors: ChatGPT 3.0, Perplexity.AI
-// Date: 02-Dec-25
+// Date: 17-Dec-25
 // Transferability: This library is designed to work on the ESP32 (and possibly the ATmega2560)
-// Author: D.Dubins
-// Date: 19-Dec-24
-// Last Updated: 23-Dec-24
 // Notes: the MLX90641 operating voltage is 3-3.6V (typical: 3.3V).
 // Use a logic shifter, or connect to an MCU that operates at 3.3V (e.g. NodeMCU).
 // After the device powers up and sends data, a thermal stabilization time is required
@@ -910,4 +907,5 @@ bool MLX90641::setRefreshRate(uint8_t rate) {
 #endif
   return (Wire.endTransmission() == 0);
 }
+
 
