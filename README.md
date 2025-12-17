@@ -50,15 +50,10 @@ The functions available in the library include:
 ```
 To use the library, copy the download to the Library directory.<p>
 
-Acknowledgements: A big thank-you to Howard Qiu for introducing me to this sensor, and for the discussions we had about it. This project was a lot of fun!
-
 Technical notes:
-- This MLX90641.h library was designed only for the ESP32. Feel free to adapt it to other MCUs!
+- This MLX90641.h library was designed only for the ESP32. Feel free to adapt it to other MCUs.
 
-
-
-
-
-
+Acknowledgements: 
+- A big thank-you to Howard Qiu for introducing me to this sensor, and for the discussions we had about it. This project was a lot of fun!
 
 
