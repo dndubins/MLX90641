@@ -6,7 +6,7 @@
 // (available at https://processing.org/)
 // Author: D. Dubins
 // Lots of help from: ChatGPT 3.0, Perplexity.AI
-// Date: 02-Dec-25
+// Date: 17-Dec-25
 // Notes: the MLX90641 operating voltage is 3-3.6V (typical: 3.3V).
 // Use a logic shifter, or connect to an MCU that operates at 3.3V (e.g. NodeMCU).
 // After the device powers up and sends data, a thermal stabilization time is required
