@@ -43,7 +43,6 @@
 #include <Wire.h>
 #include "MLX90641.h"
 
-//#define HEATMAP							// uncomment for ASCII heatmap output to Serial Monitor
 //#define DEBUG                             // show calculated and example values for calibration constants
 #define OFFSET 0.0                          // posthoc cheap temperature adjustment (shift)
 #define I2C_SPEED 100000                    // set I2C clock speed (safe speed is 100 kHz, up to 400 kHz possible)
@@ -57,7 +56,7 @@ MLX90641 myIRcam;  // declare an instance of class MLX90641
 
 void setup() {
   Serial.begin(115200);                        // Start the Serial Monitor at 115200 bps
-  Wire.begin(21, 22);                          // SDA, SCL for the ESP32 (SDA: GPIO 21, SDL: GPIO20)
+  Wire.begin(21, 22);                          // SDA, SCL for the ESP32 (SDA: GPIO 21, SDL: GPIO22). Change these to your I2C pins if using a different bus.
   Wire.setClock(I2C_SPEED);                    // set I2C clock speed (slower=more stable)
   if (myIRcam.setRefreshRate(REFRESH_RATE)) {  // set the page refresh rate (sampling frequency)
     Serial.println("Refresh rate adjusted.");
