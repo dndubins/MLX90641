@@ -824,7 +824,7 @@ void readTempC() {      // take a temperature reading of all pixels
 
 void setup() {
   Serial.begin(115200);                // Start the Serial Monitor at 115200 bps
-  Wire.begin(21, 22);                  // SDA, SCL for the ESP32
+  Wire.begin(21, 22);                  // SDA, SCL for the ESP32 (SDA: GPIO 21, SDL: GPIO22). Change these to your I2C pins if using a different bus.
   Wire.setClock(I2C_SPEED);            // set I2C clock speed (slower=more stable)
   if (setRefreshRate(REFRESH_RATE)) {  // set the page refresh rate (sampling frequency)
     Serial.println("Refresh rate adjusted.");
