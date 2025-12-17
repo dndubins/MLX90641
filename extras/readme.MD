@@ -1,1 +1,1 @@
-**Note:** When soldering the MLX90641 sensor body onto a PCB, make sure you leave a small gap (~1mm?). The bottom mental plate of the sensor is continuous with ground, and might short against the other PCB pads if flush with the board.
+**Note:** When soldering the MLX90641 sensor body onto a PCB, make sure you leave a small gap (~1mm?). The bottom metal surface of the sensor is continuous with ground, and might short against the other pads if the component is flush with the PCB.
