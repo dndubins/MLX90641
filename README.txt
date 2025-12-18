@@ -11,7 +11,12 @@ I wrote this sketch because the drivers written by Melexis available at https://
 
 Datasheet: Melexis. "MLX90641 16x12 IR Array Datasheet", Revision 4 - September 14, 2023. 3901090641
 
-* For those of you who don't like libraries, I included a library-free version in a self-contained sketch, "MLX90641.ino".
+* According to Melexis, each sensor may have up to 1 bad pixel, with either no output or out of specification temperature reading. Pixels might also go bad throughout the working life of the sensor. Once a pixel is flagged, the library will replace its value by taking the average of neighbouring pixels. I provided an example of how to manually flag a defective pixel in the example sketches:
+
+	myIRcam.badPixels[pixelAddr(9,14)]=true;    // mark pixel bad at row 9, column 14
+
+* The library has an automatic way of identifying and flagging these bad pixels. I'm not sure how well this will work, because my sensor did not have any bad pixels (yay!).
+* For those of you who don't like libraries, I included a library-free version in a self-contained sketch, "MLX90641.ino". I did not include bad pixel handling in this sketch.
 
 The functions available in the library include:
 	bool readEEPROMBlock(uint16_t startAddr, uint16_t numWords, uint16_t *dest); // Read the device EEPROM
@@ -53,6 +58,7 @@ Technical notes:
 
 Acknowledgements: 
 - A big thank-you to Howard Qiu for introducing me to this sensor, and for the discussions we had about it. This project was a lot of fun!
+
 
 
 
