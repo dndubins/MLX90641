@@ -102,6 +102,7 @@ void setup() {
   myIRcam.readKsTo();                             // read 8 KsTo coefficients
   myIRcam.readAlphaCorrRange();                   // read sensitivity correction coefficients
   myIRcam.Emissivity = myIRcam.readEmissivity();  // read Emissivity coefficient
+  //myIRcam.Emissivity = 0.95;                    // un-comment to over-write Emissivity with hard-coded value here (e.g. 0.95)
   myIRcam.alpha_CP = myIRcam.readAlpha_CP();      // read Sensitivity alpha_CP coefficient
   myIRcam.pix_OS_ref_CP = myIRcam.readOff_CP();   // read offset CP (also called pix_OS_ref_CP)
   myIRcam.Kv_CP = myIRcam.readKv_CP();            // read Kv CP
