@@ -866,6 +866,7 @@ void setup() {
   readKsTo();                     // read 8 KsTo coefficients
   readAlphaCorrRange();           // read sensitivity correction coefficients
   Emissivity = readEmissivity();  // read Emissivity coefficient
+  //myIRcam.Emissivity = 0.95;    // un-comment to over-write Emissivity with hard-coded value here (e.g. 0.95)
   alpha_CP = readAlpha_CP();      // read Sensitivity alpha_CP coefficient
   pix_OS_ref_CP = readOff_CP();   // read offset CP (also called pix_OS_ref_CP)
   Kv_CP = readKv_CP();            // read Kv CP
