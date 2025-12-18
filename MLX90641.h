@@ -78,6 +78,7 @@ class MLX90641 {
 	float TGC;                           // TGC Coefficient
 	float V_IR_compensated[NUM_PIXELS];  // V_IR_compensated values
 	float T_o[NUM_PIXELS];               // Matrix to hold final T_o[i] values
+	bool badPixels[NUM_PIXELS];          // Matrix to hold bad pixels
 	
 	// Functions:
 	bool readEEPROMBlock(uint16_t startAddr, uint16_t numWords, uint16_t *dest); // Read the device EEPROM
