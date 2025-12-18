@@ -2,7 +2,7 @@
 
 MLX90641 is a library that can control the MLX90641 16x12 IR Array using an ESP32 MCU.
 
-I wrote this sketch because the drivers written by Melexis available at https://github.com/melexis/mlx90641-library did not compile for the ESP32.<p>
+I wrote this library because the drivers written by Melexis available at https://github.com/melexis/mlx90641-library did not compile for the ESP32.<p>
 
 * The example sketch "MLX90641_basicRead.ino" illustrates a simple reading with basic temperature output to the Serial Monitor.
 * The example sketch "MLX90641_processing.ino" formats the output for a processing sketch, to draw a heat map.
