@@ -1,4 +1,4 @@
-// MLX90641.cpp file for the MLX90641.h library, version 1.0.3
+// MLX90641.cpp file for the MLX90641.h library, version 1.0.4
 // Author: D. Dubins
 // Co-authors: ChatGPT 3.0, Perplexity.AI
 // Date: 17-Dec-25
@@ -42,6 +42,7 @@ MLX90641::MLX90641()
 		Kv[i]=0.f;                       // Kv[i,j] coefficients
 		V_IR_compensated[i] = 0.f;       // V_IR_compensated values
 	    T_o[i]=0.f;                      // Matrix to hold final T_o[i] values
+		badPixels[i]=false;				 // Matrix to hold bad pixels
 	}
 	KsTa=0.f;                            // KsTa coefficient
 	CT1=0;                               // Corner temperatures
@@ -769,8 +770,8 @@ void MLX90641::readTempC() {      // take a temperature reading of all pixels
   float Ta_r = Tr_K4 - ((Tr_K4 - Ta_K4) / Emissivity);  // this is T_a-r in the datasheet
   float S_x[NUM_PIXELS] = { 0.0 };                      // define matrix to hold Sx values
   // Edit the following formulas accordingly based on the temperature range the sensor will be measuring: 11.2.2.9.1
-  //If 𝑇𝑂(𝑖,𝑗) < -20°C we are in range 1 and we will use the parameters (𝐾𝑠𝑇𝑜1, 𝐴𝑙𝑝ℎ𝑎𝑐𝑜𝑟𝑟𝑟𝑎𝑛𝑔𝑒1 and 𝐶𝑇1 = −40°𝐶)
-  //If -20°C < 𝑇𝑂(𝑖,𝑗) < -40°C we are in range 2 and we will use the parameters (𝐾𝑠𝑇𝑜2, 𝐴𝑙𝑝ℎ𝑎𝑐𝑜𝑟𝑟𝑟𝑎𝑛𝑔𝑒2 and 𝐶𝑇2 = −20°𝐶)
+  // If 𝑇𝑂(𝑖,𝑗) < -20°C we are in range 1 and we will use the parameters (𝐾𝑠𝑇𝑜1, 𝐴𝑙𝑝ℎ𝑎𝑐𝑜𝑟𝑟𝑟𝑎𝑛𝑔𝑒1 and 𝐶𝑇1 = −40°𝐶)
+  // If -20°C < 𝑇𝑂(𝑖,𝑗) < -40°C we are in range 2 and we will use the parameters (𝐾𝑠𝑇𝑜2, 𝐴𝑙𝑝ℎ𝑎𝑐𝑜𝑟𝑟𝑟𝑎𝑛𝑔𝑒2 and 𝐶𝑇2 = −20°𝐶)
   // If 0°C < 𝑇𝑂(𝑖,𝑗) < 80°C we are in range 3 and we will use the parameters (𝐾𝑠𝑇𝑜3, 𝐴𝑙𝑝ℎ𝑎𝑐𝑜𝑟𝑟𝑟𝑎𝑛𝑔𝑒3 and 𝐶𝑇3 = 0°𝐶)
   // If 80°C < 𝑇𝑂(𝑖,𝑗) < 120°C we are in range 4 and we will use the parameters (𝐾𝑠𝑇𝑜4, 𝐴𝑙𝑝ℎ𝑎𝑐𝑜𝑟𝑟𝑟𝑎𝑛𝑔𝑒4 and 𝐶𝑇4 = 80°𝐶)
   // If 120°C < 𝑇𝑂(𝑖,𝑗) < CT6°C we are in range 5 and we will use the parameters (𝐾𝑠𝑇𝑜5, 𝐴𝑙𝑝ℎ𝑎𝑐𝑜𝑟𝑟𝑟𝑎𝑛𝑔𝑒5 and 𝐶𝑇5 = 120°𝐶)
@@ -785,9 +786,13 @@ void MLX90641::readTempC() {      // take a temperature reading of all pixels
     // Apply post-hoc calibration equation - calibrate to desired surface (comment out if not needed)
     //T_o[i] = T_o[i] + OFFSET;  // Only use OFFSET term for temperature adjustment
     T_o[i] = T_o[i] * CAL_SLOPE + CAL_INT + OFFSET;  // adjust T_o based on calibration + OFFSET
+	//if(i==158)T_o[i]=100.0; // simulate a bad pixel (for debugging)
+	//if(i==176)T_o[i]=100.0; // simulate a bad pixel (for debugging)
+
     float inner = (V_IR_compensated[i] / (alpha_comp[i] * (1.0 - (KsTo3 * 273.15)) + S_x[i])) + Ta_r;
-#ifdef DEBUG
     if (inner < 0 || isnan(inner)) {
+	  badPixels[i]=true; // mark pixel as bad (math crashed)
+#ifdef DEBUG
       Serial.print("BAD INNER @ " + (String)i + ", " + (String)inner);
       Serial.print("Pixel ");
       Serial.print(i);
@@ -797,8 +802,132 @@ void MLX90641::readTempC() {      // take a temperature reading of all pixels
       Serial.print(alpha_comp[i], 8);
       Serial.print(" V_IR_comp = ");
       Serial.println(V_IR_compensated[i], 8);
-    }
 #endif
+    }
+  }
+  // Bad pixel handling
+  for (int i = 0; i < NUM_PIXELS; i++) {
+    if(badPixels[i]){
+	  int numAdj=0;
+	  T_o[i]=0.0; 			   // clear out stored data in bad pixel
+	  if(i==0){                // Upper left corner: average of 2 surrounding pixels
+		if(!badPixels[i+1]){
+		  numAdj++;
+		  T_o[i]+=T_o[i+1];
+		}
+		if(!badPixels[i+16]){
+		  numAdj++;
+		  T_o[i]+=T_o[i+16];
+		}
+
+	  }else if(i==15){         // Upper right corner: average of 2 surrounding pixels
+	  	if(!badPixels[i-1]){
+		  numAdj++;
+		  T_o[i]+=T_o[i-1];
+		}
+		if(!badPixels[i+16]){
+		  numAdj++;
+		  T_o[i]+=T_o[i+16];
+		}
+	  
+	  }else if(i==176){        // Bottom left corner: average of 2 surrounding pixels
+	  	if(!badPixels[i+1]){
+		  numAdj++;
+		  T_o[i]+=T_o[i+1];
+		}
+		if(!badPixels[i-16]){
+		  numAdj++;
+		  T_o[i]+=T_o[i-16];
+		} 
+
+	  }else if(i==191){        // Bottom right corner: average of 2 surrounding pixels	
+	  	if(!badPixels[i-1]){
+		  numAdj++;
+		  T_o[i]+=T_o[i-1];
+		}
+		if(!badPixels[i-16]){
+		  numAdj++;
+		  T_o[i]+=T_o[i-16];
+		}
+  
+	  }else if(i>0 && i<15){   // Top row (minus corners): average of 3 surrounding pixels
+	  	if(!badPixels[i-1]){
+		  numAdj++;
+		  T_o[i]+=T_o[i-1];
+		}
+		if(!badPixels[i+1]){
+		  numAdj++;
+		  T_o[i]+=T_o[i+1];
+		}
+		if(!badPixels[i+16]){
+		  numAdj++;
+		  T_o[i]+=T_o[i+16];
+		}
+  
+	  }else if(i>176 && i <191){  // Bottom row (minus corners): average of 3 surrounding pixels
+	  	if(!badPixels[i-1]){
+		  numAdj++;
+		  T_o[i]+=T_o[i-1];
+		}
+		if(!badPixels[i+1]){
+		  numAdj++;
+		  T_o[i]+=T_o[i+1];
+		}
+		if(!badPixels[i-16]){
+		  numAdj++;
+		  T_o[i]+=T_o[i-16];
+		}  
+
+	  }else if(i>0 && i<176 && i%16==0){ // Left column (minus corners): average of 3 surrounding pixels
+		if(!badPixels[i-16]){
+		  numAdj++;
+		  T_o[i]+=T_o[i-16];
+		}
+		if(!badPixels[i+1]){
+		  numAdj++;
+		  T_o[i]+=T_o[i+1];
+		}
+		if(!badPixels[i+16]){
+		  numAdj++;
+		  T_o[i]+=T_o[i+16];
+		} 
+	  
+	  }else if(i>15 && i<191 && (i+1)%16==0){  // Right column (minus corners): average of 3 surrounding pixels
+		if(!badPixels[i-16]){
+		  numAdj++;
+		  T_o[i]+=T_o[i-16];
+		}
+		if(!badPixels[i-1]){
+		  numAdj++;
+		  T_o[i]+=T_o[i-1];
+		}
+		if(!badPixels[i+16]){
+		  numAdj++;
+		  T_o[i]+=T_o[i+16];
+		} 	   
+	  
+	  }else{  // Middle (not an edge pixel): average of 4 surrounding pixels
+		if(!badPixels[i-16]){
+		  numAdj++;
+		  T_o[i]+=T_o[i-16];
+		}
+		if(!badPixels[i-1]){
+		  numAdj++;
+		  T_o[i]+=T_o[i-1];
+		}
+		if(!badPixels[i+16]){
+		  numAdj++;
+		  T_o[i]+=T_o[i+16];
+		}
+		if(!badPixels[i+1]){
+		  numAdj++;
+		  T_o[i]+=T_o[i+1];
+		}		
+	  }
+	  if(numAdj>0){
+		T_o[i]/=(float)numAdj;   // calculate average	
+	  }
+    }
   }
 
 #ifdef DEBUG
