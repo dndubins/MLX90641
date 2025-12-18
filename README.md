@@ -11,8 +11,11 @@ I wrote this library because the drivers written by Melexis available at https:/
   
 **Datasheet:** Melexis. "MLX90641 16x12 IR Array Datasheet", Revision 4 - September 14, 2023. 3901090641
 
-* Each sensor may have up to 2 bad pixels. The library has a way of manually flagging these pixels, or might be able to find and compensate for them automatically.
-* I'm not sure if automatic bad pixel detection will work, because my sensor did not have any bad pixels (yay!).
+* According to Melexis, each sensor may have up to 1 bad pixel, with either no output or out of specification temperature reading. Pixels might also go bad throughout the working life of the sensor. Once a pixel is flagged, the library will replace its value by taking the average of neighbouring pixels. I provided an example of how to manually flag a defective pixel in the example sketches:
+  ```
+  myIRcam.badPixels[pixelAddr(9,14)]=true;    // mark pixel bad at row 9, column 14
+  ```
+* The library has an automatic way of identifying and flagging these bad pixels. I'm not sure how well this will work, because my sensor did not have any bad pixels (yay!). 
 * For those of you who don't like libraries, I included a library-free version in a self-contained sketch, "MLX90641.ino". I did not include bad pixel handling in this sketch.
 
 The functions available in the library include:
@@ -57,6 +60,7 @@ Technical notes:
 
 Acknowledgements: 
 - A big thank-you to Howard Qiu for introducing me to this sensor, and for the discussions we had about it. This project was a lot of fun!
+
 
 
 
