@@ -1,4 +1,4 @@
-// MLX90641_processing.ino file for the MLX90641.h library, version 1.0.2
+// MLX90641_processing.ino file for the MLX90641.h library, version 1.0.4
 // Description: Outputs the ambient temperature + pixels all in one line
 // to the Serial Monitor. Works in conjunction with the following sketch:
 // https://github.com/dndubins/MLX90641/blob/main/extras/MLX90641_heatmap.pde
@@ -70,6 +70,10 @@ void setup() {
     Serial.println("EEPROM read failed!");
     while (1) delay(1000);
   }
+
+  // Mark bad pixels separately here (row indexes 0...11, col indexes 0..15)
+  //myIRcam.badPixels[pixelAddr(9,14)]=true;    // mark pixel bad at row 9, column 14
+  //myIRcam.badPixels[pixelAddr(11,0)]=true;    // mark pixel bad at row 11, column 0
 
   // Check EEPROM data:
 #ifdef DEBUG
@@ -145,4 +149,9 @@ void loop() {
   while (1)
     ;
 #endif
+}
+
+// helper function to manually mark a bad pixel
+int pixelAddr(int row, int col){
+  return (row*16)+col; // convert row, col to 1D array index in 1D array of pixels (e.g. badPixels[])
 }
