@@ -167,7 +167,7 @@ void loop() {
 #endif
 }
 
-// helper function to manually mark a bad pixel
+// helper function to convert pixel row, col to 1D index array
 int pixelAddr(int row, int col){
   return (row*16)+col; // convert row, col to 1D array index in 1D array of pixels (e.g. badPixels[])
 }
