@@ -1,6 +1,6 @@
 <h1>Readme file for MLX90641 16x12 IR Array</h1>
 
-MLX90641 is a library that can control the MLX90641 16x12 IR Array using an ESP32 MCU.
+MLX90641 is a library that can control the MLX90641 16x12 IR Array (by Melexis) using an ESP32 MCU.
 
 I wrote this library because the drivers written by Melexis available at https://github.com/melexis/mlx90641-library did not compile for the ESP32.<p>
 
@@ -11,7 +11,9 @@ I wrote this library because the drivers written by Melexis available at https:/
   
 **Datasheet:** Melexis. "MLX90641 16x12 IR Array Datasheet", Revision 4 - September 14, 2023. 3901090641
 
-* For those of you who don't like libraries, I included a library-free version in a self-contained sketch, "MLX90641.ino".
+* Each sensor may have up to 2 bad pixels. The library has a way of manually flagging these pixels, or might be able to find and compensate for them automatically.
+* I'm not sure if automatic detection will work, because my sensor did not have any bad pixels (yay!).
+* For those of you who don't like libraries, I included a library-free version in a self-contained sketch, "MLX90641.ino". I did not include bad pixel handling in this sketch.
 
 The functions available in the library include:
 ```
@@ -55,5 +57,6 @@ Technical notes:
 
 Acknowledgements: 
 - A big thank-you to Howard Qiu for introducing me to this sensor, and for the discussions we had about it. This project was a lot of fun!
+
 
 
