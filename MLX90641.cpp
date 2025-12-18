@@ -216,13 +216,13 @@ float MLX90641::readVdd() {  //(From 11.1.1, worked example in 11.2.2.2)
 float MLX90641::readTa() {  // Read ambient temperature, datasheet, 11.1.2
                   //Kv_PTAT is in 0x242A (fixed scale 3) and 0x242B (fixed scale 12). Example: 0.005615234 (Table 11.2.1.2)
   int16_t Kv_PTAT = readEEPROM_signed(0x242B) & 0x07FF;
-  if (Kv_PTAT > 1023) Kv_PTAT = Kv_PTAT - 2048;            // impose limits
-  float Kv_PTAT_f = (float)Kv_PTAT / 4096.0;               // divide Kv_PTAT by 2^12 (float math, example in 11.2.2.3)
-  int16_t Kt_PTAT = readEEPROM_signed(0x242A) & 0x07FF;    // read Kt_PTAT from 0x242A
-  if (Kt_PTAT > 1023) Kt_PTAT = Kt_PTAT - 2048;            // impose limits
-  float Kt_PTAT_f = (float)Kt_PTAT / 8.0;                  // divide by 2^3
+  if (Kv_PTAT > 1023) Kv_PTAT = Kv_PTAT - 2048;              // impose limits
+  float Kv_PTAT_f = (float)Kv_PTAT / 4096.0;                 // divide Kv_PTAT by 2^12 (float math, example in 11.2.2.3)
+  int16_t Kt_PTAT = readEEPROM_signed(0x242A) & 0x07FF;      // read Kt_PTAT from 0x242A
+  if (Kt_PTAT > 1023) Kt_PTAT = Kt_PTAT - 2048;              // impose limits
+  float Kt_PTAT_f = (float)Kt_PTAT / 8.0;                    // divide by 2^3
   int16_t Vdd_i = readAddr_signed(0x05AA);                   // Read Vdd again from RAM, address 0x05AA
-  if (Vdd_i > 32767) Vdd_i = Vdd_i - 65536;                      // impose limits
+  if (Vdd_i > 32767) Vdd_i = Vdd_i - 65536;                  // impose limits
   float dV = ((float)Vdd_i - (float)Vdd_25) / (float)K_Vdd;  // calculate the change in voltage dV
   uint16_t V_PTAT25 = 32 * (readEEPROM_unsigned(0x2428) & 0x07FF) + (readEEPROM_unsigned(0x2429) & 0x07FF);
   int16_t V_PTAT = readAddr_signed(0x05A0);                                              // get V_PTAT at addr 0x05A0
@@ -1036,5 +1036,6 @@ bool MLX90641::setRefreshRate(uint8_t rate) {
 #endif
   return (Wire.endTransmission() == 0);
 }
+
 
 
