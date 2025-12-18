@@ -19,7 +19,7 @@ I wrote this library because the drivers written by Melexis available at https:/
 * For those of you who don't like libraries, I included a library-free version in a self-contained sketch, "MLX90641.ino". I did not include bad pixel handling in this sketch.
 
 The functions available in the library include:
-```
+	```
 	bool readEEPROMBlock(uint16_t startAddr, uint16_t numWords, uint16_t *dest); // Read the device EEPROM
 	bool isNewDataAvailable(); // Check if new data is available
 	bool clearNewDataBit(); // Clear the new data available bit (must be done after each read)
@@ -52,7 +52,7 @@ The functions available in the library include:
 	uint16_t pix_addr_S0(uint16_t pxl); // to retrieve pixel address, subpage 0
 	uint16_t pix_addr_S1(uint16_t pxl); // to retrieve pixel address, subpage 1
 	bool setRefreshRate(uint8_t rate); // // To set the refresh rate - 10.4, 12.2.1, and Figure 11
-```
+	```
 To use the library, copy the download to the Library directory.<p>
 
 Technical notes:
@@ -60,6 +60,7 @@ Technical notes:
 
 Acknowledgements: 
 - A big thank-you to Howard Qiu for introducing me to this sensor, and for the discussions we had about it. This project was a lot of fun!
+
 
 
 
