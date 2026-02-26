@@ -1,11 +1,10 @@
-// MLX90641_heatmap.pde
+// MLX90641_Heatmap.pde
 // Description: This sketch generates a colour heatmap with small control panel for the MLX90641 16x12 IR sensor.
-// It works in conjunction with the file https://github.com/dndubins/MLX90641/blob/main/examples/MLX90641_processing/MLX90641_processing.ino
 // Author: D. Dubins with assitance from Perplexity.AI
-// Date: 11-Dec-25
+// Date: 25-Feb-26
 // Simple 16x12 heat map for MLX90641 serial output
-// Expects lines: Tth, p0, p1, ... p191 (comma-separated)
-// Match port + baud (9600) to your serial port settings
+// Expects lines: Tamb, p0, p1, ... p191 (comma-separated)
+// Match port + baud (115200) to your serial port settings
 // Libraries: ControlP5 v 2.2.6, by Andreas Schlegal
 // (tutorial here: https://www.kasperkamperman.com/blog/processing-code/controlp5-library-example1/)
 // Note: This is not a sketch for the Arduino IDE. It was written for the Processing environment, available here: https://processing.org/
@@ -13,7 +12,7 @@
 import processing.serial.*;
 import controlP5.*;    // import controlP5 library
 
-final int PIXELS=192;  // number of pixels in the array
+final int PIXELS=192;  // number of pixels in the array (needs to be ROWSxCOLS)
 PFont boldFont;        // declare a bold font for the control window header
 PFont smallFont;       // declare small font to display ambient temperature
 
@@ -23,35 +22,39 @@ ControlP5 cp5; // controlP5 object called cp5
 
 // Adjust COM port settings here
 Serial myPort; // for communications port
-int portNum = 0; // index for COM port number - update to open the correct serial port.
+int portNum = 2; // index for COM port number - update to open the correct serial port.
 int portSpeed = 115200; // COM port baud rate in bps
 
 float[] pixels = new float[PIXELS];
 boolean haveFrame = false;
 
 // grid / window settings
-int cols = 16;
-int rows = 12;
+int COLS = 16;
+int ROWS = 12;
 int cellSize = 60;         // pixel size of each cell
 int margin = 20;           // outer margin
 
-// value range for color mapping (adjust to your environment)
-float minTemp = 15;        // cold color at/below this (default: 20)
-float maxTemp = 30;        // hot color at/above this (default: 35)
+// value range for colour mapping (adjust to your environment)
+float minTemp = 15;        // cold colour at/below this (default: 15)
+float maxTemp = 30;        // hot colour at/above this (default: 30)
 float Tamb = 0.0;          // to hold ambient temperature
 float Tavg = 0.0;          // to hold average temperature
+float Tmin = 0.0;          // to hold average temperature
+float Tmax = 0.0;          // to hold average temperature
 
 // second window definition
 SecondWindow win;
-// array to store 7 colors that can be changed by the different
+// array to store 7 colours that can be changed by the different
 // user interface elements
-boolean invert_x=false; // for x-invert state
-boolean invert_y=false; // for y-invert state
-boolean pause=false; // for pause button state
-float offsetval=0.0; // for temperature offset slider
+boolean invert_x=false;    // for x-invert state
+boolean invert_y=false;    // for y-invert state
+boolean pause=false;       // for pause button state
+boolean hide_vals=false;   // for hiding temperature values button state
+boolean invert_heat=false; // for inverting the heat map (cold=red, hot=blue)
+float offsetval=0.0;       // for temperature offset slider
 
 void settings() {
-  size(cols * cellSize + margin * 2, rows * cellSize + margin * 2);
+  size(COLS * cellSize + margin * 2, ROWS * cellSize + margin * 2);
   pixelDensity(displayDensity()); // ensures proper rendering on high-DPI displays
 }
 
@@ -86,19 +89,23 @@ void draw() {
     return;
   }
 
-  // Draw 8x8 heatmap
+  // Draw ROWSxCOLS heatmap
 
   int xadj, yadj;
-  float total=0.0; // reset the average
-  for (int y = 0; y < rows; y++) {
-    for (int x = 0; x < cols; x++) {
-      xadj=(invert_x)?cols-x-1:x;
-      yadj=(invert_y)?rows-y-1:y;
+  float total=0.0;   // reset the average
+  float Tlocmin=200.0;  // unrealistically high number
+  float Tlocmax=-200.0; // unrealistically low number
 
-      int idx = yadj * cols + xadj;    // linear index 0..191
+  for (int y = 0; y < ROWS; y++) {
+    for (int x = 0; x < COLS; x++) {
+      xadj=(invert_x)?COLS-x-1:x;
+      yadj=(invert_y)?ROWS-y-1:y;
+
+      int idx = yadj * COLS + xadj;    // linear index 0..191
       float t = pixels[idx];
       total = total + t;
-
+      if (t>Tlocmax)Tlocmax=t;
+      if (t<Tlocmin)Tlocmin=t;
       // Clamp to [minTemp, maxTemp]
       float tt = constrain(t, minTemp, maxTemp);
       float frac = map(tt, minTemp, maxTemp, 0, 1);
@@ -113,7 +120,11 @@ void draw() {
       int y0 = margin + y * cellSize;
 
       noStroke();
-      fill(r, g, b);
+      if (!invert_heat) {
+        fill(r, g, b);
+      } else {
+        fill(b, g, r);
+      }
       rect(x0, y0, cellSize, cellSize);
 
       // Draw temperature text in white or black depending on background
@@ -125,11 +136,15 @@ void draw() {
       }
 
       // Show 1 decimal place; adjust as desired
-      String label = nf(t, 0, 1);
-      text(label, x0 + cellSize / 2.0, y0 + cellSize / 2.0);
+      if (!hide_vals) {
+        String label = nf(t, 0, 1);
+        text(label, x0 + cellSize / 2.0, y0 + cellSize / 2.0);
+      }
     }
   }
-  Tavg=total/(float)PIXELS;
+  Tavg=total/(float)PIXELS; // calculate average
+  Tmax=Tlocmax; // calculate Tmax
+  Tmin=Tlocmin; // calculate Tmin
 }
 
 // Called automatically when a '\n' is received
@@ -167,7 +182,7 @@ public class SecondWindow extends PApplet {
   }
 
   public void settings() {
-    size(235, 155); // width, height
+    size(235, 175); // width, height
     pixelDensity(displayDensity()); // ensures proper rendering on high-DPI displays
   }
 
@@ -178,8 +193,8 @@ public class SecondWindow extends PApplet {
 
     // define a toggle button for pausing the heat map
     cp5.addToggle("Pause")
-      .setPosition(20, 80)
-      .setSize(60, 30)
+      .setPosition(20, 75)
+      .setSize(60, 20)
       .getCaptionLabel()
       .setText("Pause").toUpperCase(false)
       .setFont(createFont("Arial Bold", 12*fontScale))
@@ -187,8 +202,8 @@ public class SecondWindow extends PApplet {
 
     // define a toggle button for inverting in the x-direction
     cp5.addToggle("Invert_x")
-      .setPosition(90, 80)
-      .setSize(60, 30)
+      .setPosition(90, 75)
+      .setSize(60, 20)
       .getCaptionLabel()
       .setText("Invert X").toUpperCase(false)
       .setFont(createFont("Arial Bold", 12*fontScale))
@@ -196,11 +211,38 @@ public class SecondWindow extends PApplet {
 
     // define a toggle button for inverting in the y-direction
     cp5.addToggle("Invert_y")
-      .setPosition(160, 80)
-      .setSize(60, 30)
+      .setPosition(160, 75)
+      .setSize(60, 20)
       .getCaptionLabel()
       .setText("Invert Y").toUpperCase(false)
       .setFont(createFont("Arial Bold", 12*fontScale))
+      .align(ControlP5.CENTER, ControlP5.CENTER);
+
+    // define a toggle button for toggling number display
+    cp5.addButton("Auto_Scale")
+      .setPosition(20, 100)
+      .setSize(60, 20)
+      .getCaptionLabel()
+      .setText("Auto Scale").toUpperCase(false)
+      .setFont(createFont("Arial Bold", 10*fontScale))
+      .align(ControlP5.CENTER, ControlP5.CENTER);
+
+    // define a toggle button for inverting in the x-direction
+    cp5.addToggle("Hide_Vals")
+      .setPosition(90, 100)
+      .setSize(60, 20)
+      .getCaptionLabel()
+      .setText("Hide Vals").toUpperCase(false)
+      .setFont(createFont("Arial Bold", 10*fontScale))
+      .align(ControlP5.CENTER, ControlP5.CENTER);
+
+    // define a toggle button for inverting in the y-direction
+    cp5.addToggle("Invert_Heat")
+      .setPosition(160, 100)
+      .setSize(60, 20)
+      .getCaptionLabel()
+      .setText("Invert Heat").toUpperCase(false)
+      .setFont(createFont("Arial Bold", 10*fontScale))
       .align(ControlP5.CENTER, ControlP5.CENTER);
 
     // define a slider button for the lower colour temperature (blue)
@@ -229,7 +271,7 @@ public class SecondWindow extends PApplet {
 
     // define a numberbox for the temperature offset
     cp5.addNumberbox("Offset")
-      .setPosition(160, 120)
+      .setPosition(160, 130)
       .setSize(60, 14)
       .setRange(-10.0, 10.0)
       .setValue(0.0)
@@ -247,15 +289,16 @@ public class SecondWindow extends PApplet {
     textFont(boldFont);         // set bold font
     text("Heat Map Image Control", 25, 20);
     textFont(smallFont);         // set bold font
-    text("Average:", 25, 128);   
-    text("Ambient:", 25, 148);
-    text("°C", 128, 128);   
-    text("°C", 128, 148);   
-    fill(220,220,220); // lighter grey
+    text("Average:", 25, 138);
+    text("Ambient:", 25, 158);
+    text("°C", 128, 138);
+    text("°C", 128, 158);
+    fill(220, 220, 220); // lighter grey
     String label = nf(Tavg, 0, 1);     // Show 1 decimal place; adjust as desired
-    text(label, 90, 128);
+
+    text(label, 90, 138);
     label = nf(Tamb, 0, 1);
-    text(label, 90, 148);
+    text(label, 90, 158);
   }
 
   public void controlEvent(ControlEvent theEvent) {
@@ -288,6 +331,22 @@ public class SecondWindow extends PApplet {
 
       if (theEvent.getController().getName()=="Pause") {
         pause=!pause;
+      }
+
+      if (theEvent.getController().getName()=="Auto_Scale") {
+        minTemp = Tmin - 2;
+        maxTemp = Tmax + 2;
+        // update sliders
+        cp5.getController("min_T").setValue(minTemp);
+        cp5.getController("max_T").setValue(maxTemp);
+      }
+
+      if (theEvent.getController().getName()=="Hide_Vals") {
+        hide_vals=!hide_vals;
+      }
+
+      if (theEvent.getController().getName()=="Invert_Heat") {
+        invert_heat=!invert_heat;
       }
     }
   }
