@@ -136,7 +136,7 @@ void loop() {
 
     for (int r = 0; r < 12; r++) {    // rows
       for (int c = 0; c < 16; c++) {  // columns
-        Serial.print(", ");  // print divider for data (needed for both display modes)
+        Serial.print(",");  // print divider for data (needed for both display modes)
         Serial.print(myIRcam.T_o[r * 16 + c], 1);  // putting the data in a 16x12 grid
       }
     }
