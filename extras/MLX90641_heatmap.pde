@@ -2,15 +2,21 @@
 // Description: This sketch generates a colour heatmap with small control panel for the MLX90641 16x12 IR sensor.
 // Author: D. Dubins with assitance from Perplexity.AI
 // Date: 25-Feb-26
+// Last Updated: 05-Mar-26
 // Simple 16x12 heat map for MLX90641 serial output
 // Expects lines: Tamb, p0, p1, ... p191 (comma-separated)
-// Match port + baud (115200) to your serial port settings
+// Match port + baud (921600) to your serial port settings
 // Libraries: ControlP5 v 2.2.6, by Andreas Schlegal
 // (tutorial here: https://www.kasperkamperman.com/blog/processing-code/controlp5-library-example1/)
 // Note: This is not a sketch for the Arduino IDE. It was written for the Processing environment, available here: https://processing.org/
 
 import processing.serial.*;
 import controlP5.*;    // import controlP5 library
+
+// Adjust COM port settings here
+Serial myPort; // for communications port
+int portNum = 2; // index for COM port number - update to open the correct serial port.
+int portSpeed = 115200;    // COM port baud rate in bps
 
 final int PIXELS=192;  // number of pixels in the array (needs to be ROWSxCOLS)
 PFont boldFont;        // declare a bold font for the control window header
@@ -20,19 +26,14 @@ float fontScale=1.0/displayDensity();   // scaling factor to adjust font sizes f
 
 ControlP5 cp5; // controlP5 object called cp5
 
-// Adjust COM port settings here
-Serial myPort; // for communications port
-int portNum = 2; // index for COM port number - update to open the correct serial port.
-int portSpeed = 115200; // COM port baud rate in bps
-
 float[] pixels = new float[PIXELS];
 boolean haveFrame = false;
 
 // grid / window settings
 int COLS = 16;
 int ROWS = 12;
-int cellSize = 60;         // pixel size of each cell
-int margin = 20;           // outer margin
+int cellSize = 30;         // pixel size of each cell
+int margin = 5;           // outer margin
 
 // value range for colour mapping (adjust to your environment)
 float minTemp = 15;        // cold colour at/below this (default: 15)
@@ -60,9 +61,21 @@ void settings() {
 
 void setup() {
   // List available ports in the console
-  println(Serial.list());
-
-  // Pick the right index from the printed list
+  println("Available Ports:");
+  println("----------------");
+  int numPorts=Serial.list().length;
+  for (int i=0; i<numPorts; i++) {
+    String pInfo="["+i+"] "+Serial.list()[i];
+    if (i==portNum) {
+      pInfo+=" <- PORT SELECTED";
+    }
+    println(pInfo);
+  }
+  if (portNum < 0 || portNum > numPorts) {
+    println("Invalid port number. Exiting sketch.");
+    exit(); // leave the sketch
+  }
+  // Now open the port. Pick the right index from the printed list
   String portName = Serial.list()[portNum];   // change to correct index of COM port as needed
   myPort = new Serial(this, portName, portSpeed);
 
@@ -137,7 +150,15 @@ void draw() {
 
       // Show 1 decimal place; adjust as desired
       if (!hide_vals) {
-        String label = nf(t, 0, 1);
+        String temp1 = nf(t, 0, 1); // e.g. "99.9", "100.0"
+        String label;
+        if (temp1.length() <= 4) {  // up to two digits + decimal + one decimal place
+          label = temp1;            // keep one decimal
+        } else {
+          label = nf(t, 0, 0);      // switch to integer
+          int ti = round(t);        // for 3 digits, drop decimal for display purposes
+          label = nf(ti, 0);
+        }
         text(label, x0 + cellSize / 2.0, y0 + cellSize / 2.0);
       }
     }
