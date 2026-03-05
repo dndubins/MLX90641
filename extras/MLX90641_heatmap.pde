@@ -5,7 +5,7 @@
 // Last Updated: 05-Mar-26
 // Simple 16x12 heat map for MLX90641 serial output
 // Expects lines: Tamb, p0, p1, ... p191 (comma-separated)
-// Match port + baud (921600) to your serial port settings
+// Match port + baud (115200) to your serial port settings
 // Libraries: ControlP5 v 2.2.6, by Andreas Schlegal
 // (tutorial here: https://www.kasperkamperman.com/blog/processing-code/controlp5-library-example1/)
 // Note: This is not a sketch for the Arduino IDE. It was written for the Processing environment, available here: https://processing.org/
