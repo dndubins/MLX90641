@@ -38,6 +38,7 @@ int margin = 5;            // outer margin
 // value range for colour mapping (adjust to your environment)
 float minTemp = 15;        // cold colour at/below this (default: 15)
 float maxTemp = 30;        // hot colour at/above this (default: 30)
+
 float Tamb = 0.0;          // to hold ambient temperature
 float Tavg = 0.0;          // to hold average temperature
 float Tmin = 0.0;          // to hold average temperature
