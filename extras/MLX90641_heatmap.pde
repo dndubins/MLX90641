@@ -32,8 +32,8 @@ boolean haveFrame = false;
 // grid / window settings
 int COLS = 16;
 int ROWS = 12;
-int cellSize = 30;         // pixel size of each cell
-int margin = 5;           // outer margin
+int cellSize = 30;         // pixel size of each cell; change the cell size here.
+int margin = 5;            // outer margin
 
 // value range for colour mapping (adjust to your environment)
 float minTemp = 15;        // cold colour at/below this (default: 15)
