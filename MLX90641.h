@@ -18,7 +18,7 @@
 #define CAL_INT -45.4209807273067           // Intercept of T_meas vs. T_o calibration curve (post-hoc calibration). My value: -45.4209807273067 
 #define CAL_SLOPE 2.64896693658985          // Slope of T_meas vs. T_o calibration curve (post-hoc calibration). My value: 2.64896693658985 
 #define EEPROM_WORDS 832                    // MLX90641 EEPROM size in 16-bit words
-#define FRAME_BUFFER_SIZE 6000   			// For reading the temperatures and a faster serial print
+#define FRAME_BUFFER_SIZE 6000   			// for reading the temperatures and a faster serial print
 
 // Static Variables:
 static uint16_t eeData[EEPROM_WORDS];       // to hold the EEPROM contents
