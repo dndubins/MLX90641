@@ -112,7 +112,8 @@ class MLX90641 {
 	float fourth_root(float n); // fourth root done with two square roots
 	uint16_t pix_addr_S0(uint16_t pxl); // to retrieve pixel address, subpage 0
 	uint16_t pix_addr_S1(uint16_t pxl); // to retrieve pixel address, subpage 1
-	bool setRefreshRate(uint8_t rate); // // To set the refresh rate - 10.4, 12.2.1, and Figure 11
+	bool setRefreshRate(uint8_t rate); // To set the refresh rate - 10.4, 12.2.1, and Figure 11
+    void printFrame(float *Tdat); // To print temperature pixel frame to serial monitor
 };
 
 #endif
