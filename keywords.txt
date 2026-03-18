@@ -31,3 +31,4 @@ fourth_root	KEYWORD2
 pix_addr_S0	KEYWORD2
 pix_addr_S1	KEYWORD2
 setRefreshRate	KEYWORD2
+printFrame	KEYWORD2
