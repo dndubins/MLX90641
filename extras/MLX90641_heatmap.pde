@@ -2,7 +2,7 @@
 // Description: This sketch generates a colour heatmap with small control panel for the MLX90641 16x12 IR sensor.
 // Author: D. Dubins with assitance from Perplexity.AI
 // Date: 25-Feb-26
-// Last Updated: 05-Mar-26
+// Last Updated: 18-Mar-26
 // Simple 16x12 heat map for MLX90641 serial output
 // Expects lines: Tamb, p0, p1, ... p191 (comma-separated)
 // Match port + baud (115200) to your serial port settings
