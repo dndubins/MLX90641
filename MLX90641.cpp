@@ -1037,5 +1037,19 @@ bool MLX90641::setRefreshRate(uint8_t rate) {
   return (Wire.endTransmission() == 0);
 }
 
-
+// Print pixels to serial monitor
+void MLX90641::printFrame(float *Tdat) {
+  int index = 0;
+  for (int i = 0; i < NUM_PIXELS; i++) {
+    // Write ",xx.x" into buffer
+    int written = snprintf(&frameBuffer[index], FRAME_BUFFER_SIZE - index, ",%.1f", Tdat[i]);
+    if (written <= 0) break;              // error
+    index += written;
+    if (index >= FRAME_BUFFER_SIZE - 10)  // safety margin
+      break;
+  }
+  frameBuffer[index++] = '\n'; // add new line character
+  frameBuffer[index] = '\0';   // add null pointer
+  Serial.write((uint8_t*)frameBuffer, index);
+}
 
