@@ -240,7 +240,7 @@ public class SecondWindow extends PApplet {
 
     // define a toggle button for softer colours
     cp5.addToggle("Soft")
-      .setPosition(20, 125)
+      .setPosition(90, 125)
       .setSize(60, 20)
       .getCaptionLabel()
       .setText("Soft").toUpperCase(false)
