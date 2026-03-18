@@ -20,7 +20,7 @@ int portSpeed = 115200;    // COM port baud rate in bps
 
 final int PIXELS=192;  // number of pixels in the array (needs to be ROWSxCOLS)
 PFont boldFont;        // declare a bold font for the control window header
-PFont smallFont;       // declare small font to display ambient temperature
+PFont smallFont;       // declare small font to display sensor temperature
 
 float fontScale=1.0/displayDensity();   // scaling factor to adjust font sizes for different resolution screens
 
@@ -32,14 +32,13 @@ boolean haveFrame = false;
 // grid / window settings
 int COLS = 16;
 int ROWS = 12;
-int cellSize = 30;         // pixel size of each cell; change the cell size here.
+int cellSize = 50;         // pixel size of each cell: use this to adjust window size
 int margin = 5;            // outer margin
 
 // value range for colour mapping (adjust to your environment)
-float minTemp = 15;        // cold colour at/below this (default: 15)
-float maxTemp = 30;        // hot colour at/above this (default: 30)
-
-float Tamb = 0.0;          // to hold ambient temperature
+float minTemp = 20;        // cold colour at/below this (default: 20)
+float maxTemp = 35;        // hot colour at/above this (default: 35)
+float Tamb = 0.0;          // to hold sensor temperature
 float Tavg = 0.0;          // to hold average temperature
 float Tmin = 0.0;          // to hold average temperature
 float Tmax = 0.0;          // to hold average temperature
@@ -123,13 +122,23 @@ void draw() {
       // Clamp to [minTemp, maxTemp]
       float tt = constrain(t, minTemp, maxTemp);
       float frac = map(tt, minTemp, maxTemp, 0, 1);
+      float coldfrac=2*frac;   // rescale fraction to cold colours
+      float hotfrac=2*(frac-0.5); // rescale fraction to hot colours
+ 
+      //soft red: (238. 105, 112)
+      //white: (255,255,255)
+      //soft blue: (92, 138, 199)
 
-      // Simple blue->red gradient
-      // cold: blue (0,0,255), hot: red (255,0,0)
-      float r = lerp(0, 255, frac);
-      float g = 0;
-      float b = lerp(255, 0, frac);
-
+      float r, g, b;
+      if (frac>0.5) {
+        r = lerp(255, 238, hotfrac);
+        g = lerp(255, 105, hotfrac);
+        b = lerp(255, 112, hotfrac);
+      } else {
+        r = lerp(92, 255, coldfrac);
+        g = lerp(138, 255, coldfrac);
+        b = lerp(199, 255, coldfrac);
+      }
       int x0 = margin + x * cellSize;
       int y0 = margin + y * cellSize;
 
@@ -149,15 +158,15 @@ void draw() {
         fill(0);
       }
 
-      // Show 1 decimal place; adjust as desired
+      // Adjust significant digits here
       if (!hide_vals) {
-        String temp1 = nf(t, 0, 1); // e.g. "99.9", "100.0"
+        String temp1 = nf(t, 0, 1); // 1 significant digit (e.g. "99.9")
         String label;
-        if (temp1.length() <= 4) {  // up to two digits + decimal + one decimal place
-          label = temp1;            // keep one decimal
-        } else {
+        if (temp1.length() <= 4) {  // up to twi digits + decimal + one decimal place
+          label = temp1;            // keep the decimal
+        } else {                    // for 3 digits, drop decimal for display purposes
           label = nf(t, 0, 0);      // switch to integer
-          int ti = round(t);        // for 3 digits, drop decimal for display purposes
+          int ti = round(t);
           label = nf(ti, 0);
         }
         text(label, x0 + cellSize / 2.0, y0 + cellSize / 2.0);
@@ -271,20 +280,20 @@ public class SecondWindow extends PApplet {
     cp5.addSlider("min_T")
       .setPosition(25, 35) // xpos, ypos
       .setSize(140, 10) // width, height
-      .setRange(0, 30) // min/max range
-      .setValue(15)   // default value of slider
+      .setRange(0, 30)  // min/max range
+      .setValue(20)     // manually set default value of slider here
       .setDecimalPrecision(1)
       .setNumberOfTickMarks(61)
       .showTickMarks(false)
       .setCaptionLabel("Min °C") // label text
       .setFont(createFont("Arial Bold", 12*fontScale));
 
-    // define a slider button for the lower colour temperature (blue)
+    // define a slider button for the higher colour temperature (red)
     cp5.addSlider("max_T")
       .setPosition(25, 55) // xpos, ypos
       .setSize(140, 10) // width, height
       .setRange(20, 50) // min/max range
-      .setValue(30)   // default value of slider
+      .setValue(35)     // manually set default value of slider here
       .setDecimalPrecision(1)
       .setNumberOfTickMarks(61)
       .showTickMarks(false)
@@ -312,7 +321,7 @@ public class SecondWindow extends PApplet {
     text("Heat Map Image Control", 25, 20);
     textFont(smallFont);         // set bold font
     text("Average:", 25, 138);
-    text("Ambient:", 25, 158);
+    text("Sensor:", 25, 158);
     text("°C", 128, 138);
     text("°C", 128, 158);
     fill(220, 220, 220); // lighter grey
