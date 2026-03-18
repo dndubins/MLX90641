@@ -129,18 +129,9 @@ void loop() {
   }
   if (myIRcam.isNewDataAvailable()) {
     myIRcam.clearNewDataBit();
-
-    myIRcam.readTempC();  // read the temperature
-
-    Serial.print(myIRcam.Ta, 1);
-
-    for (int r = 0; r < 12; r++) {    // rows
-      for (int c = 0; c < 16; c++) {  // columns
-        Serial.print(",");  // print divider for data (needed for both display modes)
-        Serial.print(myIRcam.T_o[r * 16 + c], 1);  // putting the data in a 16x12 grid
-      }
-    }
-    Serial.println();
+    myIRcam.readTempC();              // read the temperature
+    Serial.print(myIRcam.Ta, 1);      // print ambient temperature
+    myIRcam.printFrame(myIRcam.T_o);  // print temperature frame to Serial Monitor
   } else {
     Serial.println("Timeout: No new data");
     return;  // Skip this frame
