@@ -50,6 +50,7 @@ SecondWindow win;
 boolean invert_x=false;    // for x-invert state
 boolean invert_y=false;    // for y-invert state
 boolean pause=false;       // for pause button state
+boolean softer=false;      // for softer colours
 boolean hide_vals=false;   // for hiding temperature values button state
 boolean invert_heat=false; // for inverting the heat map (cold=red, hot=blue)
 float offsetval=0.0;       // for temperature offset slider
@@ -122,32 +123,38 @@ void draw() {
       // Clamp to [minTemp, maxTemp]
       float tt = constrain(t, minTemp, maxTemp);
       float frac = map(tt, minTemp, maxTemp, 0, 1);
-      float coldfrac=2*frac;   // rescale fraction to cold colours
-      float hotfrac=2*(frac-0.5); // rescale fraction to hot colours
- 
-      //soft red: (238. 105, 112)
-      //white: (255,255,255)
-      //soft blue: (92, 138, 199)
-
+      if(invert_heat)frac = 1-frac;
       float r, g, b;
-      if (frac>0.5) {
-        r = lerp(255, 238, hotfrac);
-        g = lerp(255, 105, hotfrac);
-        b = lerp(255, 112, hotfrac);
+
+      if (softer) {  // softer colours
+        //soft red: (238. 105, 112)
+        //white: (255,255,255)
+        //soft blue: (92, 138, 199)
+
+        float coldfrac=2*frac;   // rescale fraction to cold colours
+        float hotfrac=2*(frac-0.5); // rescale fraction to hot colours
+        if (frac>0.5) {
+          r = lerp(255, 238, hotfrac);
+          g = lerp(255, 105, hotfrac);
+          b = lerp(255, 112, hotfrac);
+        } else {
+          r = lerp(92, 255, coldfrac);
+          g = lerp(138, 255, coldfrac);
+          b = lerp(199, 255, coldfrac);
+        }
       } else {
-        r = lerp(92, 255, coldfrac);
-        g = lerp(138, 255, coldfrac);
-        b = lerp(199, 255, coldfrac);
+        //red: (255, 0, 0)
+        //blue: (0, 0, 255)
+        r = lerp(0, 255, frac);
+        g = 0;
+        b = lerp(255, 0, frac);
       }
+
       int x0 = margin + x * cellSize;
       int y0 = margin + y * cellSize;
 
       noStroke();
-      if (!invert_heat) {
-        fill(r, g, b);
-      } else {
-        fill(b, g, r);
-      }
+      fill(r, g, b);
       rect(x0, y0, cellSize, cellSize);
 
       // Draw temperature text in white or black depending on background
@@ -213,7 +220,7 @@ public class SecondWindow extends PApplet {
   }
 
   public void settings() {
-    size(235, 175); // width, height
+    size(235, 195); // width, height
     pixelDensity(displayDensity()); // ensures proper rendering on high-DPI displays
   }
 
@@ -228,6 +235,15 @@ public class SecondWindow extends PApplet {
       .setSize(60, 20)
       .getCaptionLabel()
       .setText("Pause").toUpperCase(false)
+      .setFont(createFont("Arial Bold", 12*fontScale))
+      .align(ControlP5.CENTER, ControlP5.CENTER);
+
+    // define a toggle button for softer colours
+    cp5.addToggle("Soft")
+      .setPosition(20, 125)
+      .setSize(60, 20)
+      .getCaptionLabel()
+      .setText("Soft").toUpperCase(false)
       .setFont(createFont("Arial Bold", 12*fontScale))
       .align(ControlP5.CENTER, ControlP5.CENTER);
 
@@ -302,7 +318,7 @@ public class SecondWindow extends PApplet {
 
     // define a numberbox for the temperature offset
     cp5.addNumberbox("Offset")
-      .setPosition(160, 130)
+      .setPosition(160, 153)
       .setSize(60, 14)
       .setRange(-10.0, 10.0)
       .setValue(0.0)
@@ -320,16 +336,16 @@ public class SecondWindow extends PApplet {
     textFont(boldFont);         // set bold font
     text("Heat Map Image Control", 25, 20);
     textFont(smallFont);         // set bold font
-    text("Average:", 25, 138);
-    text("Sensor:", 25, 158);
-    text("°C", 128, 138);
-    text("°C", 128, 158);
+    text("Average:", 25, 165);
+    text("Sensor:", 25, 185);
+    text("°C", 128, 165);
+    text("°C", 128, 185);
     fill(220, 220, 220); // lighter grey
     String label = nf(Tavg, 0, 1);     // Show 1 decimal place; adjust as desired
 
-    text(label, 90, 138);
+    text(label, 90, 165);
     label = nf(Tamb, 0, 1);
-    text(label, 90, 158);
+    text(label, 90, 185);
   }
 
   public void controlEvent(ControlEvent theEvent) {
@@ -364,6 +380,10 @@ public class SecondWindow extends PApplet {
         pause=!pause;
       }
 
+      if (theEvent.getController().getName()=="Soft") {
+        softer=!softer;
+      }
+      
       if (theEvent.getController().getName()=="Auto_Scale") {
         minTemp = Tmin - 2;
         maxTemp = Tmax + 2;
