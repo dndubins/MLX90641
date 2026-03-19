@@ -1,4 +1,4 @@
-// MLX90641_NeoPixel.ino file for the MLX90641.h library, version 1.0.5
+// MLX90641_NeoPixel.ino file for the MLX90641.h library, version 1.0.6
 // Author: D. Dubins
 // Date: 05-Jan-26
 // Notes: the MLX90641 operating voltage is 3-3.6V (typical: 3.3V).
